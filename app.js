@@ -8,8 +8,10 @@ var app = express();
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
+app.set('views', './views');
+app.set('view engine', 'jade');
 
-app.get('/throttle', function getThrottle(req, res) {
+app.get('/throttles', function getThrottle(req, res) {
 	featureThrottle.listThrottles(function onListThrottles(err, throttles) {
 		if (err)
 			res.status(500).send();
@@ -18,8 +20,28 @@ app.get('/throttle', function getThrottle(req, res) {
 	});
 });
 
+app.post('/throttles', function postThrottles(req, res) {
+	featureThrottle.updateThrottles(req.body, function onSetThrottle(err) {
+		if (err)
+			res.status(500).send();
+		else
+			res.send();
+	});
+});
+
 app.post('/throttle/:name', function postThrottle(req, res) {
-	featureThrottle.setThrottle(req.params.name, parseFloat(req.body), function onSetThrottle(err) {
+	var throttles = {};
+	throttles[req.params.name] = parseFloat(req.body);
+	featureThrottle.updateThrottles(throttles, function onSetThrottle(err) {
+		if (err)
+			res.status(500).send();
+		else
+			res.send();
+	});
+});
+
+app.delete('/throttle/:name', function deleteThrottle(req, res) {
+	featureThrottle.removeThrottle(req.params.name, function onRemoveThrottle(err) {
 		if (err)
 			res.status(500).send();
 		else
@@ -33,6 +55,37 @@ app.get('/throttle/:name/passes/:id', function getThrottlePasses(req, res) {
 			res.status(500).send();
 		else
 			res.send(doesPass);
+	});
+});
+
+app.get('/throttle-editor', function getThrottleEditor(req, res) {
+	featureThrottle.listThrottles(function onListThrottles(err, throttles) {
+		var params = {};
+		params.throttles = throttles;
+		params.redirectUri = '/throttle-editor';
+		res.render('throttle-editor', params);
+	});
+});
+
+app.post('/throttle-editor', function postThrottleEditor(req, res) {
+	var throttleData = req.body;
+	var newName = throttleData.newName;
+	var newValue = throttleData.newValue;
+	var redirectUri = throttleData.redirectUri;
+	delete throttleData.newName;
+	delete throttleData.newValue;
+	delete throttleData.redirectUri;
+	if (newName) {
+		if (newValue)
+			throttleData[newName] = parseFloat(newValue);
+		else
+			throttleData[newName] = 0.0;
+	}
+	featureThrottle.setThrottles(throttleData, function onSetThrottles(err) {
+		if (err)
+			res.status(500).send();
+		else
+			res.redirect(redirectUri);
 	});
 });
 

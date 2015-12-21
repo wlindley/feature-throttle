@@ -1,0 +1,30 @@
+html
+	head
+		title Throttle Editor
+		script(type='text/javascript').
+			function removeThrottle(targetId) {
+				var node = document.getElementById(targetId);
+				node.parentNode.removeChild(node);
+			}
+	body
+		h1 Throttle Editor
+		form(action='/throttle-editor', method='post')
+			input(type='hidden', name='redirectUri', value=redirectUri)
+			table
+				tr
+					td Name
+					td Percent
+					td Remove
+				each val, key in throttles
+					tr(id=key)
+						td= key
+						td
+							input(type='text', name=key, value=val)
+						td
+							button(type='button', onclick='removeThrottle(\'' + key + '\')') X
+				tr
+					td
+						input(type='text', name='newName', value='')
+					td
+						input(type='text', name='newValue', value='')
+			input(type='submit', value='Submit')
