@@ -75,12 +75,13 @@ app.post('/throttle-editor', function postThrottleEditor(req, res) {
 	delete throttleData.newName;
 	delete throttleData.newValue;
 	delete throttleData.redirectUri;
-	if (newName)
+	if (newName) {
 		if (newValue)
 			throttleData[newName] = parseFloat(newValue);
 		else
 			throttleData[newName] = 0.0;
-	featureThrottle.updateThrottles(throttleData, function onSetThrottles(err) {
+	}
+	featureThrottle.setThrottles(throttleData, function onSetThrottles(err) {
 		if (err)
 			res.status(500).send();
 		else

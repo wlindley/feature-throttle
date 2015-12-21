@@ -32,7 +32,7 @@ module.exports.updateThrottles = function updateThrottles(input, callback) {
 };
 
 module.exports.setThrottles = function setThrottles(input, callback) {
-	dataSource.set(throttles, callback);
+	dataSource.set(input, callback);
 };
 
 module.exports.checkThrottle = function checkThrottle(name, id, callback) {
