@@ -71,7 +71,7 @@ Vagrant.configure(2) do |config|
       sudo apt-get install -y nodejs
       sudo apt-get install -y git
       sudo apt-get install -y redis-server
-      sudo npm install -g express body-parser cookie-parser multer redis jade
+      sudo npm install -g express body-parser cookie-parser multer redis jade mocha chai sinon async
       echo 'export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules' >> /home/vagrant/.bashrc
     SHELL
 end
