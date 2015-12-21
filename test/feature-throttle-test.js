@@ -1,6 +1,7 @@
 var assert = require('chai').assert;
 var should = require('chai').should();
 var sinon = require('sinon');
+var async = require('async');
 var featureThrottle = require('../feature-throttle');
 
 describe('feature-throttle', function() {
@@ -57,6 +58,69 @@ describe('feature-throttle', function() {
 				if (err)
 					throw err;
 				dataSource.set.calledWith(original);
+				done();
+			});
+		});
+	});
+
+	describe('#updateThrottles', function() {
+		it('adds and updates throttles without removing any', function(done){
+			var original = {'feature1' : .25, 'feature2' : .5};
+			var additional = {'feature1' : .35, 'feature3' : .45};
+			dataSource.get.callsArgWith(0, null, original);
+			dataSource.set.callsArg(1);
+			featureThrottle.updateThrottles(additional, function(err){
+				if (err)
+					throw err;
+				var combined = {'feature1' : .35, 'feature2' : .5, 'feature3' : .45};
+				dataSource.set.calledWith(combined);
+				done();
+			});
+		});
+	});
+
+	describe('#checkThrottle', function() {
+		it('returns false when throttle is set to zero', function(done) {
+			var throttles = {'feature' : 0};
+			dataSource.get.callsArgWith(0, null, throttles);
+			featureThrottle.checkThrottle('feature', 'userId', function(err, didPass) {
+				didPass.should.be.false;
+				done();
+			});
+		});
+
+		it('returns true when throttle is set to one', function(done) {
+			var throttles = {'feature' : 1};
+			dataSource.get.callsArgWith(0, null, throttles);
+			featureThrottle.checkThrottle('feature', 'userId', function(err, didPass) {
+				didPass.should.be.true;
+				done();
+			});
+		});
+
+		it('returns expected value when throttle is set to fraction', function(done) {
+			var throttles = {'feature' : .5};
+			var passes = 0;
+			var fails = 0;
+			var userIds = [];
+			dataSource.get.callsArgWith(0, null, throttles);
+			for (var i = 0; i < 1000; i++)
+				userIds.push("user" + (Math.random() * 10000));
+			async.each(userIds, function(userId, itComplete){
+				featureThrottle.checkThrottle('feature', userId, function(err, didPass) {
+					if (err)
+						throw err;
+					if (didPass)
+						passes++;
+					else
+						fails++;
+					itComplete();
+				});
+			}, function(err) {
+				if (err)
+					throw err;
+				var percentPassed = passes / (passes + fails);
+				percentPassed.should.be.above(.4).and.below(.6);
 				done();
 			});
 		});
