@@ -6,13 +6,16 @@ var featureThrottle = require('../feature-throttle');
 
 describe('feature-throttle', function() {
 	var dataSource = null;
+	var originalThrottles = null;
 
 	beforeEach(function() {
 		dataSource = {
 			"set" : sinon.stub(),
 			"get" : sinon.stub()
 		};
+		originalThrottles = {};
 		dataSource.set.callsArg(1);
+		dataSource.get.callsArgWith(0, null, originalThrottles);
 		featureThrottle.setDataSource(dataSource);
 	});
 
@@ -30,12 +33,12 @@ describe('feature-throttle', function() {
 
 	describe('#listThrottles', function() {
 		it('should return throttles from data source', function(done) {
-			var expected = {"bing" : .25, "baz" : .125};
-			dataSource.get.callsArgWith(0, null, expected);
+			originalThrottles['bing'] = .25;
+			originalThrottles['baz'] = .125;
 			featureThrottle.listThrottles(function(err, actual) {
 				if (err)
 					throw err;
-				actual.should.equal(expected);
+				actual.should.equal(originalThrottles);
 				done();
 			});
 		});
@@ -43,23 +46,22 @@ describe('feature-throttle', function() {
 
 	describe('#removeThrottle', function() {
 		it('sets existing throttle data after deleting specified throttle', function(done) {
-			var original = {"feature1" : .5, "feature2" : .6};
-			dataSource.get.callsArgWith(0, null, original);
-			featureThrottle.removeThrottle("feature2", function(err) {
+			originalThrottles['feature1'] = .5;
+			originalThrottles['feature2'] = .6;
+			featureThrottle.removeThrottle('feature2', function(err) {
 				if (err)
 					throw err;
-				dataSource.set.calledWith({"feature1" : .5});
+				dataSource.set.calledWith({'feature1' : .5});
 				done();
 			});
 		});
 
 		it('does not throw when asked to remove non-existent throttle', function(done) {
-			var original = {"feature1" : .5};
-			dataSource.get.callsArgWith(0, null, original);
-			featureThrottle.removeThrottle("feature2", function(err) {
+			originalThrottles['feature1'] = .5;
+			featureThrottle.removeThrottle('feature2', function(err) {
 				if (err)
 					throw err;
-				dataSource.set.calledWith(original);
+				dataSource.set.calledWith(originalThrottles);
 				done();
 			});
 		});
@@ -67,9 +69,9 @@ describe('feature-throttle', function() {
 
 	describe('#updateThrottles', function() {
 		it('adds and updates throttles without removing any', function(done){
-			var original = {'feature1' : .25, 'feature2' : .5};
+			originalThrottles['feature1'] = .25;
+			originalThrottles['feature2'] = .5;
 			var additional = {'feature1' : .35, 'feature3' : .45};
-			dataSource.get.callsArgWith(0, null, original);
 			featureThrottle.updateThrottles(additional, function(err){
 				if (err)
 					throw err;
@@ -82,8 +84,7 @@ describe('feature-throttle', function() {
 
 	describe('#checkThrottle', function() {
 		it('returns false when throttle is set to zero', function(done) {
-			var throttles = {'feature' : 0};
-			dataSource.get.callsArgWith(0, null, throttles);
+			originalThrottles['feature'] = 0;
 			featureThrottle.checkThrottle('feature', 'userId', function(err, didPass) {
 				didPass.should.be.false;
 				done();
@@ -91,8 +92,7 @@ describe('feature-throttle', function() {
 		});
 
 		it('returns true when throttle is set to one', function(done) {
-			var throttles = {'feature' : 1};
-			dataSource.get.callsArgWith(0, null, throttles);
+			originalThrottles['feature'] = 1;
 			featureThrottle.checkThrottle('feature', 'userId', function(err, didPass) {
 				didPass.should.be.true;
 				done();
@@ -100,11 +100,10 @@ describe('feature-throttle', function() {
 		});
 
 		it('returns expected value when throttle is set to fraction', function(done) {
-			var throttles = {'feature' : .5};
+			originalThrottles['feature'] = .5;
 			var passes = 0;
 			var fails = 0;
 			var userIds = [];
-			dataSource.get.callsArgWith(0, null, throttles);
 			for (var i = 0; i < 1000; i++)
 				userIds.push("user" + (Math.random() * 10000));
 			async.each(userIds, function(userId, itComplete){
