@@ -10,22 +10,59 @@ describe('feature-throttle', function() {
 
 	beforeEach(function() {
 		dataSource = {
-			"set" : sinon.stub(),
-			"get" : sinon.stub()
+			"add" : sinon.stub(),
+			"get" : sinon.stub(),
+			"remove" : sinon.stub()
 		};
 		originalThrottles = {};
-		dataSource.set.callsArg(1);
+		dataSource.remove.callsArg(1);
+		dataSource.add.callsArg(1);
 		dataSource.get.callsArgWith(0, null, originalThrottles);
 		featureThrottle.setDataSource(dataSource);
 	});
 
 	describe('#setThrottles', function() {
-		it('should pass given throttles to data source', function(done) {
-			var throttles = {"foo" : 1, "bar" : .5};
+		it('adds new throttles', function(done) {
+			var throttles = {'feature2' : .2};
 			featureThrottle.setThrottles(throttles, function(err) {
 				if (err)
 					throw err;
-				dataSource.set.calledWith(throttles);
+				assert(dataSource.add.calledWith(throttles));
+				assert(!dataSource.remove.called);
+				done();
+			});
+		});
+
+		it('updates existing throttles', function(done) {
+			originalThrottles['feature1'] = .3;
+			var updated = {'feature1' : .8};
+			featureThrottle.setThrottles(updated, function(err) {
+				if (err)
+					throw err;
+				assert(dataSource.add.calledWith(updated));
+				assert(!dataSource.remove.called);
+				done();
+			});
+		});
+
+		it('deletes existing keys that are not present in new data', function(done) {
+			originalThrottles['feature1'] = .05;
+			var newThrottles = {'feature2' : .95};
+			featureThrottle.setThrottles(newThrottles, function(err) {
+				if (err)
+					throw err;
+				assert(dataSource.remove.calledWith(['feature1']));
+				assert(dataSource.add.calledWith(newThrottles));
+				done();
+			});
+		});
+
+		it('does not call add if no new or existing keys are specified', function(done) {
+			originalThrottles['feature1'] = .45;
+			featureThrottle.setThrottles({}, function(err) {
+				if (err)
+					throw err;
+				assert(!dataSource.add.called);
 				done();
 			});
 		});
@@ -45,38 +82,32 @@ describe('feature-throttle', function() {
 	});
 
 	describe('#removeThrottle', function() {
-		it('sets existing throttle data after deleting specified throttle', function(done) {
-			originalThrottles['feature1'] = .5;
-			originalThrottles['feature2'] = .6;
+		it('removes single throttle', function(done) {
 			featureThrottle.removeThrottle('feature2', function(err) {
 				if (err)
 					throw err;
-				dataSource.set.calledWith({'feature1' : .5});
+				assert(dataSource.remove.calledWith(['feature2']));
 				done();
 			});
 		});
 
-		it('does not throw when asked to remove non-existent throttle', function(done) {
-			originalThrottles['feature1'] = .5;
-			featureThrottle.removeThrottle('feature2', function(err) {
+		it('removes multiple throttles when multiple names are passed', function(done) {
+			featureThrottle.removeThrottle('feature2', 'feature3', function(err) {
 				if (err)
 					throw err;
-				dataSource.set.calledWith(originalThrottles);
+				assert(dataSource.remove.calledWith(['feature2', 'feature3']));
 				done();
 			});
 		});
 	});
 
 	describe('#updateThrottles', function() {
-		it('adds and updates throttles without removing any', function(done){
-			originalThrottles['feature1'] = .25;
-			originalThrottles['feature2'] = .5;
+		it('adds and updates specified throttles', function(done){
 			var additional = {'feature1' : .35, 'feature3' : .45};
 			featureThrottle.updateThrottles(additional, function(err){
 				if (err)
 					throw err;
-				var combined = {'feature1' : .35, 'feature2' : .5, 'feature3' : .45};
-				dataSource.set.calledWith(combined);
+				assert(dataSource.add.calledWith(additional));
 				done();
 			});
 		});
