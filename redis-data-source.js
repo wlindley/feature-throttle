@@ -15,11 +15,11 @@ module.exports.get = function get(callback) {
 	});
 };
 
-module.exports.set = function set(throttles, callback) {
-	redis.del(redisKey, function onDelete(err) {
-		if (err)
-			callback(new Error(err));
-		
-		redis.hmset(redisKey, throttles, callback);
-	});
+module.exports.add = function add(throttles, callback) {
+	redis.hmset(redisKey, throttles, callback);
+};
+
+module.exports.remove = function remove(names, callback) {
+	var args = [redisKey].concat(names, [callback]);
+	redis.hdel.apply(redis, args);
 };
