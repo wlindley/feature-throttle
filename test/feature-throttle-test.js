@@ -5,20 +5,20 @@ var async = require('async');
 var featureThrottle = require('../feature-throttle');
 
 describe('feature-throttle', function() {
-	var dataSource = null;
+	var dataProvider = null;
 	var originalThrottles = null;
 
 	beforeEach(function() {
-		dataSource = {
+		dataProvider = {
 			"add" : sinon.stub(),
 			"get" : sinon.stub(),
 			"remove" : sinon.stub()
 		};
 		originalThrottles = {};
-		dataSource.remove.callsArg(1);
-		dataSource.add.callsArg(1);
-		dataSource.get.callsArgWith(0, null, originalThrottles);
-		featureThrottle.setDataSource(dataSource);
+		dataProvider.remove.callsArg(1);
+		dataProvider.add.callsArg(1);
+		dataProvider.get.callsArgWith(0, null, originalThrottles);
+		featureThrottle.setDataProvider(dataProvider);
 	});
 
 	describe('#setThrottles', function() {
@@ -27,8 +27,8 @@ describe('feature-throttle', function() {
 			featureThrottle.setThrottles(throttles, function(err) {
 				if (err)
 					throw err;
-				assert(dataSource.add.calledWith(throttles));
-				assert(!dataSource.remove.called);
+				assert(dataProvider.add.calledWith(throttles));
+				assert(!dataProvider.remove.called);
 				done();
 			});
 		});
@@ -39,8 +39,8 @@ describe('feature-throttle', function() {
 			featureThrottle.setThrottles(updated, function(err) {
 				if (err)
 					throw err;
-				assert(dataSource.add.calledWith(updated));
-				assert(!dataSource.remove.called);
+				assert(dataProvider.add.calledWith(updated));
+				assert(!dataProvider.remove.called);
 				done();
 			});
 		});
@@ -51,8 +51,8 @@ describe('feature-throttle', function() {
 			featureThrottle.setThrottles(newThrottles, function(err) {
 				if (err)
 					throw err;
-				assert(dataSource.remove.calledWith(['feature1']));
-				assert(dataSource.add.calledWith(newThrottles));
+				assert(dataProvider.remove.calledWith(['feature1']));
+				assert(dataProvider.add.calledWith(newThrottles));
 				done();
 			});
 		});
@@ -62,7 +62,7 @@ describe('feature-throttle', function() {
 			featureThrottle.setThrottles({}, function(err) {
 				if (err)
 					throw err;
-				assert(!dataSource.add.called);
+				assert(!dataProvider.add.called);
 				done();
 			});
 		});
@@ -86,7 +86,7 @@ describe('feature-throttle', function() {
 			featureThrottle.removeThrottle('feature2', function(err) {
 				if (err)
 					throw err;
-				assert(dataSource.remove.calledWith(['feature2']));
+				assert(dataProvider.remove.calledWith(['feature2']));
 				done();
 			});
 		});
@@ -95,7 +95,7 @@ describe('feature-throttle', function() {
 			featureThrottle.removeThrottle('feature2', 'feature3', function(err) {
 				if (err)
 					throw err;
-				assert(dataSource.remove.calledWith(['feature2', 'feature3']));
+				assert(dataProvider.remove.calledWith(['feature2', 'feature3']));
 				done();
 			});
 		});
@@ -107,7 +107,7 @@ describe('feature-throttle', function() {
 			featureThrottle.updateThrottles(additional, function(err){
 				if (err)
 					throw err;
-				assert(dataSource.add.calledWith(additional));
+				assert(dataProvider.add.calledWith(additional));
 				done();
 			});
 		});
