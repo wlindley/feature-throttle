@@ -1,28 +1,28 @@
 var crypto = require('crypto');
 
-var dataSource = null;
+var dataProvider = null;
 
-module.exports.setDataSource = function setDataSource(source) {
-	dataSource = source;
+module.exports.setDataProvider = function setDataProvider(provider) {
+	dataProvider = provider;
 };
 
 module.exports.removeThrottle = function removeThrottle(name, callback) {
 	var names = Array.prototype.slice.call(arguments, 0, -1);
-	dataSource.remove(names, arguments[arguments.length - 1]);
+	dataProvider.remove(names, arguments[arguments.length - 1]);
 };
 
 module.exports.listThrottles = function listThrottles(callback) {
-	dataSource.get(callback);
+	dataProvider.get(callback);
 };
 
 module.exports.updateThrottles = function updateThrottles(throttles, callback) {
 	if (null === throttles || 0 === Object.keys(throttles).length)
 		return callback();
-	dataSource.add(throttles, callback);
+	dataProvider.add(throttles, callback);
 };
 
 module.exports.setThrottles = function setThrottles(input, callback) {
-	dataSource.get(function onListThrottles(err, throttles) {
+	dataProvider.get(function onListThrottles(err, throttles) {
 		if (err)
 			throw new Error(err);
 
@@ -31,7 +31,7 @@ module.exports.setThrottles = function setThrottles(input, callback) {
 			if (!(key in input))
 				toRemove.push(key);
 		if (0 !== toRemove.length) {
-			dataSource.remove(toRemove, function onRemove(err) {
+			dataProvider.remove(toRemove, function onRemove(err) {
 				if (err)
 					throw new Error(err);
 
@@ -44,7 +44,7 @@ module.exports.setThrottles = function setThrottles(input, callback) {
 };
 
 module.exports.checkThrottle = function checkThrottle(name, id, callback) {
-	dataSource.get(function onListThrottles(err, throttles) {
+	dataProvider.get(function onListThrottles(err, throttles) {
 		if (err)
 			return callback(new Error(err));
 		if (!(name in throttles))
