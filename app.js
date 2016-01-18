@@ -1,10 +1,10 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var FeatureThrottle = require('./feature-throttle');
-//var RedisDataProvider = require('./redis-data-provider');
-var DynamoDataProvider = require('./dynamo-data-provider');
-//var featureThrottle = new FeatureThrottle(new RedisDataProvider());
-var featureThrottle = new FeatureThrottle(new DynamoDataProvider());
+//var DataProvider = require('./redis-data-provider');
+var DataProvider = require('./dynamo-data-provider');
+//var DataProvider = require('./memory-data-provider');
+var featureThrottle = new FeatureThrottle(new DataProvider);
 featureThrottle.init(function onInitialized(err) {
 	if (err)
 		console.log('Error initializing FeatureThrottle\n', err);
