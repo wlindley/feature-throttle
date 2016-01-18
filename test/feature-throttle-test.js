@@ -2,11 +2,12 @@ var assert = require('chai').assert;
 var should = require('chai').should();
 var sinon = require('sinon');
 var async = require('async');
-var featureThrottle = require('../feature-throttle');
+var FeatureThrottle = require('../feature-throttle');
 
 describe('feature-throttle', function() {
 	var dataProvider = null;
 	var originalThrottles = null;
+	var featureThrottle = null;
 
 	beforeEach(function() {
 		dataProvider = {
@@ -18,7 +19,7 @@ describe('feature-throttle', function() {
 		dataProvider.remove.callsArg(1);
 		dataProvider.add.callsArg(1);
 		dataProvider.get.callsArgWith(0, null, originalThrottles);
-		featureThrottle.setDataProvider(dataProvider);
+		featureThrottle = new FeatureThrottle(dataProvider);
 	});
 
 	describe('#setThrottles', function() {

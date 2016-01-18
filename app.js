@@ -1,10 +1,10 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var featureThrottle = require('./feature-throttle');
+var FeatureThrottle = require('./feature-throttle');
 //var redisDataProvider = require('./redis-data-provider');
 var dynamodbDataProvider = require('./dynamo-data-provider');
 //featureThrottle.setDataProvider(redisDataProvider);
-featureThrottle.setDataProvider(dynamodbDataProvider);
+var featureThrottle = new FeatureThrottle(dynamodbDataProvider);
 
 var app = express();
 app.use(bodyParser.text());
