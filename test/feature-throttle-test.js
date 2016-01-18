@@ -4,7 +4,7 @@ var sinon = require('sinon');
 var async = require('async');
 var FeatureThrottle = require('../feature-throttle');
 
-describe('feature-throttle', function() {
+describe('FeatureThrottle', function() {
 	var dataProvider = null;
 	var originalThrottles = null;
 	var featureThrottle = null;

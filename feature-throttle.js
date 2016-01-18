@@ -1,13 +1,7 @@
 var crypto = require('crypto');
 
-var dataProvider = null;
-
 function FeatureThrottle(dataProvider) {
 	var self = this;
-
-	this.setDataProvider = function setDataProvider(provider) {
-		dataProvider = provider;
-	};
 
 	this.removeThrottle = function removeThrottle(name, callback) {
 		var names = Array.prototype.slice.call(arguments, 0, -1);
@@ -59,6 +53,6 @@ function FeatureThrottle(dataProvider) {
 			callback(null, percent < throttles[name]);
 		});
 	};
-};
+}
 
 module.exports = FeatureThrottle;
