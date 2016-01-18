@@ -2,8 +2,8 @@ var assert = require('chai').assert;
 var should = require('chai').should();
 var sinon = require('sinon');
 var async = require('async');
-var FeatureThrottle = require('../feature-throttle');
-var DataProvider = require('../memory-data-provider');
+var FeatureThrottle = require('../FeatureThrottle');
+var DataProvider = require('../MemoryDataProvider');
 
 describe('FeatureThrottle', function() {
 	var dataProvider = null;

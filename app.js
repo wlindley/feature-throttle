@@ -1,9 +1,9 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var FeatureThrottle = require('./feature-throttle');
-//var DataProvider = require('./redis-data-provider');
-var DataProvider = require('./dynamo-data-provider');
-//var DataProvider = require('./memory-data-provider');
+var FeatureThrottle = require('./FeatureThrottle');
+//var DataProvider = require('./RedisDataProvider');
+var DataProvider = require('./DynamoDataProvider');
+//var DataProvider = require('./MemoryDataProvider');
 var featureThrottle = new FeatureThrottle(new DataProvider);
 featureThrottle.init(function onInitialized(err) {
 	if (err)
