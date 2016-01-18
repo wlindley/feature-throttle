@@ -1,5 +1,3 @@
-var crypto = require('crypto');
-
 function FeatureThrottle(dataProvider, userMapper) {
 	var self = this;
 
