@@ -13,20 +13,19 @@ MemoryDataProvider.prototype.destroy = function destroy(callback) {
 };
 
 MemoryDataProvider.prototype.get = function get(callback) {
-	async.nextTick(async.apply(callback, null, throttles));
+	async.nextTick(async.apply(callback, null, this.throttleValues));
 };
 
 MemoryDataProvider.prototype.add = function add(throttles, callback) {
 	for (var key in throttles)
 		if (Object.hasOwnProperty(throttles, key))
-			throttleValues[key] = throttles[key];
+			this.throttleValues[key] = throttles[key];
 	async.nextTick(callback);
 };
 
 MemoryDataProvider.prototype.remove = function remove(names, callback) {
-	for (var key in throttles)
-		if (Object.hasOwnProperty(throttles, key))
-			delete throttleValues[key];
+	for (var i = 0; i < names.length; i++)
+		delete this.throttleValues[names[i]];
 	async.nextTick(callback);
 };
 

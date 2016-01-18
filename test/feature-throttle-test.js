@@ -3,6 +3,7 @@ var should = require('chai').should();
 var sinon = require('sinon');
 var async = require('async');
 var FeatureThrottle = require('../feature-throttle');
+var DataProvider = require('../memory-data-provider');
 
 describe('FeatureThrottle', function() {
 	var dataProvider = null;
@@ -10,19 +11,11 @@ describe('FeatureThrottle', function() {
 	var featureThrottle = null;
 
 	beforeEach(function(done) {
-		dataProvider = {
-			'add' : sinon.stub(),
-			'get' : sinon.stub(),
-			'remove' : sinon.stub(),
-			'init' : sinon.stub(),
-			'destroy' : sinon.stub()
-		};
+		dataProvider = new DataProvider();
 		originalThrottles = {};
-		dataProvider.remove.callsArg(1);
-		dataProvider.add.callsArg(1);
-		dataProvider.get.callsArgWith(0, null, originalThrottles);
-		dataProvider.init.callsArg(0);
-		dataProvider.destroy.callsArg(0);
+		sinon.stub(dataProvider, 'remove').callsArg(1);
+		sinon.stub(dataProvider, 'add').callsArg(1);
+		sinon.stub(dataProvider, 'get').callsArgWith(0, null, originalThrottles);
 		featureThrottle = new FeatureThrottle(dataProvider);
 		featureThrottle.init(done);
 	});
