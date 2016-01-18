@@ -94,5 +94,5 @@ app.post('/throttle-editor', function postThrottleEditor(req, res) {
 var server = app.listen(8080, function serverStarted() {
 	var host = server.address().address;
 	var port = server.address().port;
-	console.log("Server is listenting at http://%s:%s", host, port);
+	console.log('Server is listenting at http://%s:%s', host, port);
 });

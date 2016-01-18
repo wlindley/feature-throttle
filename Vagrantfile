@@ -1,3 +1,6 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/trusty64"
 
@@ -11,7 +14,7 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y nodejs
     sudo apt-get install -y git default-jre
     sudo apt-get install -y redis-server
-    sudo npm install -g express body-parser cookie-parser multer redis jade mocha chai sinon async aws-sdk
+    sudo npm install -g express body-parser cookie-parser multer redis jade mocha chai sinon async aws-sdk eslint
     echo 'export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules' >> /home/vagrant/.bashrcc
     wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /home/vagrant/dynamodb.tar.gz
     mkdir /home/vagrant/dynamodb

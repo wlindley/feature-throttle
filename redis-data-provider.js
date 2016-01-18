@@ -1,8 +1,8 @@
 var redis = require('./redis-wrapper');
 
-var redisKey = "featureThrottles";
+var redisKey = 'featureThrottles';
 
-module.exports.name = "redis";
+module.exports.name = 'redis';
 
 module.exports.get = function get(callback) {
 	redis.hgetall(redisKey, function dataGet(err, throttles) {

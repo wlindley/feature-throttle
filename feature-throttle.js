@@ -48,7 +48,7 @@ module.exports.checkThrottle = function checkThrottle(name, id, callback) {
 		if (err)
 			return callback(new Error(err));
 		if (!(name in throttles))
-			return callback(new Error("throttle not found"));
+			return callback(new Error('throttle not found'));
 
 		var hash = crypto.createHash('sha1').update(id).digest('hex');
 		var lowByte = parseInt(hash.substr(-2), 16);

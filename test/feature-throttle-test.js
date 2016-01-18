@@ -10,9 +10,9 @@ describe('feature-throttle', function() {
 
 	beforeEach(function() {
 		dataProvider = {
-			"add" : sinon.stub(),
-			"get" : sinon.stub(),
-			"remove" : sinon.stub()
+			'add' : sinon.stub(),
+			'get' : sinon.stub(),
+			'remove' : sinon.stub()
 		};
 		originalThrottles = {};
 		dataProvider.remove.callsArg(1);
@@ -136,7 +136,7 @@ describe('feature-throttle', function() {
 			var fails = 0;
 			var userIds = [];
 			for (var i = 0; i < 1000; i++)
-				userIds.push("user" + (Math.random() * 10000));
+				userIds.push('user' + (Math.random() * 10000));
 			async.each(userIds, function(userId, itComplete){
 				featureThrottle.checkThrottle('feature', userId, function(err, didPass) {
 					if (err)

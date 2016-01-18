@@ -5,7 +5,8 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "node ./app.js",
-		"test": "mocha --recursive"
+		"test": "mocha --recursive",
+		"lint": "eslint ."
 	},
 	"dependencies": {
 		"express": "^4.13.3",

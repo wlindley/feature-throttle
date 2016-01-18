@@ -2,12 +2,12 @@ var aws = require('aws-sdk');
 var async = require('async');
 aws.config.update({
 	region : 'us-west-2',
-	endpoint : "http://localhost:8000"
+	endpoint : 'http://localhost:8000'
 });
 var dynamodb = new aws.DynamoDB();
 var dynamodbDoc = new aws.DynamoDB.DocumentClient();
-var tableName = "feature-throttles";
-module.exports.name = "dynamodb";
+var tableName = 'feature-throttles';
+module.exports.name = 'dynamodb';
 init();
 
 function init() {
@@ -17,19 +17,19 @@ function init() {
 		if (-1 === result.TableNames.indexOf(tableName))
 			createTable();
 		else
-			console.log("Dynamo table %s already created", tableName);
+			console.log('Dynamo table %s already created', tableName);
 	});
 }
 
 function createTable() {
-	console.log("Creating Dynamo table " + tableName);
+	console.log('Creating Dynamo table ' + tableName);
 	var params = {
 		TableName : tableName,
 		KeySchema : [
-			{ AttributeName : "name", KeyType : "HASH" }
+			{ AttributeName : 'name', KeyType : 'HASH' }
 		],
 		AttributeDefinitions : [
-			{ AttributeName : "name", AttributeType : "S" }
+			{ AttributeName : 'name', AttributeType : 'S' }
 		],
 		ProvisionedThroughput : {
 			ReadCapacityUnits : 10,
@@ -39,7 +39,7 @@ function createTable() {
 	dynamodb.createTable(params, function onCreateTable(err, result) {
 		if (err)
 			throw new Error(err);
-		console.log("Dynamo table %s created", tableName);
+		console.log('Dynamo table %s created', tableName);
 	});
 }
 
@@ -47,14 +47,13 @@ module.exports.deleteTable = function deleteTable() {
 	dynamodb.deleteTable({TableName : tableName}, function onDeleteTable(err, result) {
 		if (err)
 			throw new Error(err);
-		console.log("Dynamo table %s deleted, %s", tableName, result);
+		console.log('Dynamo table %s deleted, %s', tableName, result);
 	});
 };
 
 module.exports.get = function get(callback) {
 	var params = {
-		TableName : tableName,
-
+		TableName : tableName
 	};
 	dynamodbDoc.scan(params, function onScan(err, result) {
 		if (err)
@@ -74,8 +73,8 @@ module.exports.add = function add(throttles, callback) {
 			var params = {
 				TableName : tableName,
 				Item : {
-					"name" : key,
-					"value" : item
+					'name' : key,
+					'value' : item
 				}
 			};
 			dynamodbDoc.put(params, itemComplete);

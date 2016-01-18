@@ -1,0 +1,40 @@
+{
+    "rules": {
+        "indent": [
+            2,
+            "tab"
+        ],
+        "quotes": [
+            2,
+            "single"
+        ],
+        "linebreak-style": [
+            2,
+            "unix"
+        ],
+        "semi": [
+            2,
+            "always"
+        ],
+        "no-console": 0,
+        "block-scoped-var": 2,
+        "eqeqeq": 2,
+        "guard-for-in": 2,
+        "no-eval": 2,
+        "no-implied-eval": 2,
+        "no-invalid-this": 2,
+        "callback-return": 2,
+        "no-process-exit": 2,
+        "eol-last": 2,
+        "no-trailing-spaces": 2,
+        "no-unused-vars": [2, {
+            "args": "none",
+            "varsIgnorePattern": "[sS]hould"
+        }]
+    },
+    "env": {
+        "node": true,
+        "mocha": true
+    },
+    "extends": "eslint:recommended"
+}
