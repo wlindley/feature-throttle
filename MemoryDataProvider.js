@@ -4,6 +4,8 @@ function MemoryDataProvider() {
 	this.throttleValues = {};
 }
 
+MemoryDataProvider.prototype.name = 'Memory';
+
 MemoryDataProvider.prototype.init = function init(callback) {
 	async.nextTick(callback);
 };
@@ -18,8 +20,7 @@ MemoryDataProvider.prototype.get = function get(callback) {
 
 MemoryDataProvider.prototype.add = function add(throttles, callback) {
 	for (var key in throttles)
-		if (Object.hasOwnProperty(throttles, key))
-			this.throttleValues[key] = throttles[key];
+		this.throttleValues[key] = throttles[key];
 	async.nextTick(callback);
 };
 

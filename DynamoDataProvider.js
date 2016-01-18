@@ -12,20 +12,20 @@ function DynamoDataProvider() {
 
 }
 
+DynamoDataProvider.prototype.name = 'Dynamo';
+
 DynamoDataProvider.prototype.init = function init(callback) {
 	dynamodb.listTables({}, function onListTables(err, result) {
 		if (err)
 			throw new Error(err);
 		if (-1 === result.TableNames.indexOf(tableName))
 			return createTable(callback);
-		console.log('Dynamo table %s already created', tableName);
 		callback();
 	});
 };
 
 DynamoDataProvider.prototype.destroy = function destroy(callback) {
 	dynamodb.deleteTable({TableName : tableName}, function onDeleteTable(err, result) {
-		console.log('Dynamo table %s deleted, %s', tableName, result);
 		callback(err);
 	});
 };
@@ -74,7 +74,6 @@ DynamoDataProvider.prototype.remove = function remove(names, callback) {
 };
 
 function createTable(callback) {
-	console.log('Creating Dynamo table ' + tableName);
 	var params = {
 		TableName : tableName,
 		KeySchema : [
@@ -91,7 +90,6 @@ function createTable(callback) {
 	dynamodb.createTable(params, function onCreateTable(err, result) {
 		if (err)
 			throw new Error(err);
-		console.log('Dynamo table %s created', tableName);
 		callback();
 	});
 }

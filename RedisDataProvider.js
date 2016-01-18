@@ -7,6 +7,8 @@ function RedisDataProvider() {
 
 }
 
+RedisDataProvider.prototype.name = 'Redis';
+
 RedisDataProvider.prototype.init = function init(callback) {
 	async.nextTick(callback);
 };
@@ -22,6 +24,8 @@ RedisDataProvider.prototype.get = function get(callback) {
 
 		if (null === throttles)
 			throttles = {};
+		for (var key in throttles)
+			throttles[key] = Number(throttles[key]);
 		callback(null, throttles);
 	});
 };
