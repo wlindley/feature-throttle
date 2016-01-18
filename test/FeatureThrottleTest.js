@@ -6,7 +6,7 @@ var FeatureThrottle = require('../FeatureThrottle');
 var DataProvider = require('../MemoryDataProvider');
 var UserMapper = require('../HashUserMapper');
 
-describe('FeatureThrottle', function() {
+describe('FeatureThrottle (Unit)', function() {
 	var dataProvider = null;
 	var userMapper = null;
 	var originalThrottles = null;
@@ -14,11 +14,13 @@ describe('FeatureThrottle', function() {
 
 	beforeEach(function(done) {
 		dataProvider = new DataProvider();
-		userMapper = new UserMapper();
 		originalThrottles = {};
-		sinon.stub(dataProvider, 'remove').callsArg(1);
-		sinon.stub(dataProvider, 'add').callsArg(1);
-		sinon.stub(dataProvider, 'get').callsArgWith(0, null, originalThrottles);
+		sinon.stub(dataProvider, 'remove').callsArgAsync(1);
+		sinon.stub(dataProvider, 'add').callsArgAsync(1);
+		sinon.stub(dataProvider, 'get').callsArgWithAsync(0, null, originalThrottles);
+
+		userMapper = new UserMapper();
+
 		featureThrottle = new FeatureThrottle(dataProvider, userMapper);
 		featureThrottle.init(done);
 	});
@@ -139,30 +141,26 @@ describe('FeatureThrottle', function() {
 			});
 		});
 
-		it('returns expected value when throttle is set to fraction', function(done) {
+		it('returns true when user mapper returns value below throttle', function(done) {
 			originalThrottles['feature'] = .5;
-			var passes = 0;
-			var fails = 0;
-			var userIds = [];
-			for (var i = 0; i < 1000; i++)
-				userIds.push('user' + (Math.random() * 10000));
-			async.each(userIds, function(userId, itComplete){
-				featureThrottle.checkThrottle('feature', userId, function(err, didPass) {
-					if (err)
-						throw err;
-					if (didPass)
-						passes++;
-					else
-						fails++;
-					itComplete();
-				});
-			}, function(err) {
-				if (err)
-					throw err;
-				var percentPassed = passes / (passes + fails);
-				percentPassed.should.be.above(.4).and.below(.6);
-				done();
-			});
+			sinon.stub(userMapper, 'mapUser').callsArgWithAsync(1, null, .1);
+			async.waterfall([
+				async.apply(featureThrottle.checkThrottle, 'feature', 'user01'),
+				async.asyncify(function(didPass) {
+					didPass.should.be.true;
+				})
+			], done);
+		});
+
+		it('returns false when user mapper returns value above throttle', function(done) {
+			originalThrottles['feature'] = .5;
+			sinon.stub(userMapper, 'mapUser').callsArgWithAsync(1, null, .9);
+			async.waterfall([
+				async.apply(featureThrottle.checkThrottle, 'feature', 'user01'),
+				async.asyncify(function(didPass) {
+					didPass.should.be.false;
+				})
+			], done);
 		});
 	});
 });

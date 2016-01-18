@@ -4,6 +4,7 @@ var DynamoDataProvider = require('../DynamoDataProvider');
 var MemoryDataProvider = require('../MemoryDataProvider');
 var UserMapper = require('../HashUserMapper');
 var should = require('chai').should();
+var sinon = require('sinon');
 var async = require('async');
 
 var dataProviderTypes = [MemoryDataProvider, RedisDataProvider, DynamoDataProvider];
@@ -131,30 +132,35 @@ dataProviderTypes.forEach(function buildTestSuite(DataProvider) {
 				], done);
 			});
 
-			it('result averages to about .5 when throttle is set to half', function(done) {
-				var passes = 0;
-				var fails = 0;
-				var userIds = [];
-				for (var i = 0; i < 100; i++)
-					userIds.push('user' + (Math.random() * 10000));
-
+			it('returns true when user mapper returns value below throttle', function(done) {
+				var userMapper = new UserMapper();
+				testObj = new FeatureThrottle(new DataProvider(), userMapper);
+				sinon.stub(userMapper, 'mapUser').callsArgWithAsync(1, null, .1);
 				async.series([
+					testObj.init,
 					async.apply(testObj.setThrottles, {'feature' : .5}),
-					async.apply(async.each, userIds, function(userId, iterComplete) {
-						testObj.checkThrottle('feature', userId, function(err, didPass) {
-							if (err)
-								return async.nextTick(async.apply(iterComplete, err));
-							if (didPass)
-								passes++;
-							else
-								fails++;
-							async.nextTick(iterComplete);
-						});
-					}),
-					async.asyncify(function() {
-						var percentPassed = passes / (passes + fails);
-						percentPassed.should.be.above(.4).and.below(.6);
-					})
+					async.apply(async.waterfall, [
+						async.apply(testObj.checkThrottle, 'feature', 'user01'),
+						async.asyncify(function(didPass) {
+							didPass.should.be.true;
+						})
+					])
+				], done);
+			});
+
+			it('returns false when user mapper returns value above throttle', function(done) {
+				var userMapper = new UserMapper();
+				testObj = new FeatureThrottle(new DataProvider(), userMapper);
+				sinon.stub(userMapper, 'mapUser').callsArgWithAsync(1, null, .9);
+				async.series([
+					testObj.init,
+					async.apply(testObj.setThrottles, {'feature' : .5}),
+					async.apply(async.waterfall, [
+						async.apply(testObj.checkThrottle, 'feature', 'user01'),
+						async.asyncify(function(didPass) {
+							didPass.should.be.false;
+						})
+					])
 				], done);
 			});
 		});
