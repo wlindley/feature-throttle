@@ -36,5 +36,9 @@
         "node": true,
         "mocha": true
     },
+    "ecmaFeatures" : {
+        "blockBindings": true,
+        "templateStrings": true
+    },
     "extends": "eslint:recommended"
 }
