@@ -4,19 +4,22 @@ var sinon = require('sinon');
 var async = require('async');
 var FeatureThrottle = require('../FeatureThrottle');
 var DataProvider = require('../MemoryDataProvider');
+var UserMapper = require('../HashUserMapper');
 
 describe('FeatureThrottle', function() {
 	var dataProvider = null;
+	var userMapper = null;
 	var originalThrottles = null;
 	var featureThrottle = null;
 
 	beforeEach(function(done) {
 		dataProvider = new DataProvider();
+		userMapper = new UserMapper();
 		originalThrottles = {};
 		sinon.stub(dataProvider, 'remove').callsArg(1);
 		sinon.stub(dataProvider, 'add').callsArg(1);
 		sinon.stub(dataProvider, 'get').callsArgWith(0, null, originalThrottles);
-		featureThrottle = new FeatureThrottle(dataProvider);
+		featureThrottle = new FeatureThrottle(dataProvider, userMapper);
 		featureThrottle.init(done);
 	});
 

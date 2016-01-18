@@ -2,6 +2,7 @@ var FeatureThrottle = require('../FeatureThrottle');
 var RedisDataProvider = require('../RedisDataProvider');
 var DynamoDataProvider = require('../DynamoDataProvider');
 var MemoryDataProvider = require('../MemoryDataProvider');
+var UserMapper = require('../HashUserMapper');
 var should = require('chai').should();
 var async = require('async');
 
@@ -14,7 +15,7 @@ dataProviderTypes.forEach(function buildTestSuite(DataProvider) {
 		var testObj;
 
 		beforeEach(function(done) {
-			testObj = new FeatureThrottle(new DataProvider());
+			testObj = new FeatureThrottle(new DataProvider(), new UserMapper());
 			testObj.init(done);
 		});
 

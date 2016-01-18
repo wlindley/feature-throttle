@@ -1,6 +1,6 @@
 var crypto = require('crypto');
 
-function FeatureThrottle(dataProvider) {
+function FeatureThrottle(dataProvider, userMapper) {
 	var self = this;
 
 	this.init = function init(callback) {
@@ -55,10 +55,11 @@ function FeatureThrottle(dataProvider) {
 			if (!(name in throttles))
 				return callback(new Error('throttle not found'));
 
-			var hash = crypto.createHash('sha1').update(id).digest('hex');
-			var lowByte = parseInt(hash.substr(-2), 16);
-			var percent = Number(lowByte) / 256.0;
-			callback(null, percent < throttles[name]);
+			userMapper.mapUser(id, function onUserMapped(err, mappedUser) {
+				if (err)
+					return callback(err);
+				callback(null, mappedUser < throttles[name]);
+			});
 		});
 	};
 }
