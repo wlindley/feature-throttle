@@ -18,6 +18,7 @@ Vagrant.configure(2) do |config|
     echo 'export NODE_PATH=$NODE_PATH:/usr/local/lib/node_modules' >> /home/vagrant/.bashrcc
     wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /home/vagrant/dynamodb.tar.gz
     mkdir /home/vagrant/dynamodb
-    tar -zxvf /home/vagrant/dynamodb.tar.gz -C /home/vagrant/dynamodb.tar.gz
+    tar -zxvf /home/vagrant/dynamodb.tar.gz -C /home/vagrant/dynamodb
+    java -Xmx256m -Djava.library.path=/home/vagrant/dynamodb/DynamoDBLocal_lib -jar /home/vagrant/dynamodb/DynamoDBLocal.jar -inMemory &
   SHELL
 end
