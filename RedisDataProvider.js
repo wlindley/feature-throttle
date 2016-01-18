@@ -25,7 +25,8 @@ RedisDataProvider.prototype.get = function get(callback) {
 		if (null === throttles)
 			throttles = {};
 		for (var key in throttles)
-			throttles[key] = Number(throttles[key]);
+			if (Object.prototype.hasOwnProperty.call(throttles, key))
+				throttles[key] = Number(throttles[key]);
 		callback(null, throttles);
 	});
 };

@@ -8,7 +8,6 @@ var async = require('async');
 var dataProviderTypes = [MemoryDataProvider, RedisDataProvider, DynamoDataProvider];
 
 dataProviderTypes.forEach(function buildTestSuite(DataProvider) {
-	var dp = new DataProvider();
 	var providerName = new DataProvider().name;
 
 	describe(`FeatureThrottle (${providerName} Integration)`, function() {
