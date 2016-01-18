@@ -1,10 +1,16 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var FeatureThrottle = require('./feature-throttle');
-//var redisDataProvider = require('./redis-data-provider');
-var dynamodbDataProvider = require('./dynamo-data-provider');
-//featureThrottle.setDataProvider(redisDataProvider);
-var featureThrottle = new FeatureThrottle(dynamodbDataProvider);
+//var RedisDataProvider = require('./redis-data-provider');
+var DynamoDataProvider = require('./dynamo-data-provider');
+//var featureThrottle = new FeatureThrottle(new RedisDataProvider());
+var featureThrottle = new FeatureThrottle(new DynamoDataProvider());
+featureThrottle.init(function onInitialized(err) {
+	if (err)
+		console.log('Error initializing FeatureThrottle\n', err);
+	else
+		console.log('Successfully initialized FeatureThrottle');
+});
 
 var app = express();
 app.use(bodyParser.text());

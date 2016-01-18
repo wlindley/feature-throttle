@@ -3,6 +3,14 @@ var crypto = require('crypto');
 function FeatureThrottle(dataProvider) {
 	var self = this;
 
+	this.init = function init(callback) {
+		dataProvider.init(callback);
+	};
+
+	this.destroy = function destroy(callback) {
+		dataProvider.destroy(callback);
+	};
+
 	this.removeThrottle = function removeThrottle(name, callback) {
 		var names = Array.prototype.slice.call(arguments, 0, -1);
 		dataProvider.remove(names, arguments[arguments.length - 1]);

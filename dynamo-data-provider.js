@@ -7,21 +7,73 @@ aws.config.update({
 var dynamodb = new aws.DynamoDB();
 var dynamodbDoc = new aws.DynamoDB.DocumentClient();
 var tableName = 'feature-throttles';
-module.exports.name = 'dynamodb';
-init();
 
-function init() {
+function DynamoDataProvider() {
+
+}
+
+DynamoDataProvider.prototype.init = function init(callback) {
 	dynamodb.listTables({}, function onListTables(err, result) {
 		if (err)
 			throw new Error(err);
 		if (-1 === result.TableNames.indexOf(tableName))
-			createTable();
-		else
-			console.log('Dynamo table %s already created', tableName);
+			return createTable(callback);
+		console.log('Dynamo table %s already created', tableName);
+		callback();
 	});
-}
+};
 
-function createTable() {
+DynamoDataProvider.prototype.destroy = function destroy(callback) {
+	dynamodb.deleteTable({TableName : tableName}, function onDeleteTable(err, result) {
+		console.log('Dynamo table %s deleted, %s', tableName, result);
+		callback(err);
+	});
+};
+
+DynamoDataProvider.prototype.get = function get(callback) {
+	var params = {
+		TableName : tableName
+	};
+	dynamodbDoc.scan(params, function onScan(err, result) {
+		if (err)
+			throw new Error(err);
+
+		var throttles = {};
+		result.Items.forEach(function onEach(item, index, array) {
+			throttles[item.name] = item.value;
+		});
+		callback(null, throttles);
+	});
+};
+
+DynamoDataProvider.prototype.add = function add(throttles, callback) {
+	async.forEachOf(throttles,
+		function onEach(item, key, itemComplete) {
+			var params = {
+				TableName : tableName,
+				Item : {
+					'name' : key,
+					'value' : item
+				}
+			};
+			dynamodbDoc.put(params, itemComplete);
+		},
+		callback);
+};
+
+DynamoDataProvider.prototype.remove = function remove(names, callback) {
+	async.each(names,
+		function onEach(item, itemComplete) {
+			var params = {
+				TableName : tableName,
+				Key : { name : item }
+			};
+			dynamodbDoc.delete(params, itemComplete);
+		},
+		callback);
+};
+
+function createTable(callback) {
 	console.log('Creating Dynamo table ' + tableName);
 	var params = {
 		TableName : tableName,
@@ -40,56 +92,8 @@ function createTable() {
 		if (err)
 			throw new Error(err);
 		console.log('Dynamo table %s created', tableName);
+		callback();
 	});
 }
 
-module.exports.deleteTable = function deleteTable() {
-	dynamodb.deleteTable({TableName : tableName}, function onDeleteTable(err, result) {
-		if (err)
-			throw new Error(err);
-		console.log('Dynamo table %s deleted, %s', tableName, result);
-	});
-};
-
-module.exports.get = function get(callback) {
-	var params = {
-		TableName : tableName
-	};
-	dynamodbDoc.scan(params, function onScan(err, result) {
-		if (err)
-			throw new Error(err);
-
-		var throttles = {};
-		result.Items.forEach(function onEach(item, index, array) {
-			throttles[item.name] = item.value;
-		});
-		callback(null, throttles);
-	});
-};
-
-module.exports.add = function add(throttles, callback) {
-	async.forEachOf(throttles,
-		function onEach(item, key, itemComplete) {
-			var params = {
-				TableName : tableName,
-				Item : {
-					'name' : key,
-					'value' : item
-				}
-			};
-			dynamodbDoc.put(params, itemComplete);
-		},
-		callback);
-};
-
-module.exports.remove = function remove(names, callback) {
-	async.each(names,
-		function onEach(item, itemComplete) {
-			var params = {
-				TableName : tableName,
-				Key : { name : item }
-			};
-			dynamodbDoc.delete(params, itemComplete);
-		},
-		callback);
-};
+module.exports = DynamoDataProvider;

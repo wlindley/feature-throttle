@@ -1,10 +1,21 @@
 var redis = require('./redis-wrapper');
+var async = require('async');
 
 var redisKey = 'featureThrottles';
 
-module.exports.name = 'redis';
+function RedisDataProvider() {
 
-module.exports.get = function get(callback) {
+}
+
+RedisDataProvider.prototype.init = function init(callback) {
+	async.nextTick(callback);
+};
+
+RedisDataProvider.prototype.destroy = function destroy(callback) {
+	async.nextTick(callback);
+};
+
+RedisDataProvider.prototype.get = function get(callback) {
 	redis.hgetall(redisKey, function dataGet(err, throttles) {
 		if (err)
 			return callback(new Error(err));
@@ -15,11 +26,13 @@ module.exports.get = function get(callback) {
 	});
 };
 
-module.exports.add = function add(throttles, callback) {
+RedisDataProvider.prototype.add = function add(throttles, callback) {
 	redis.hmset(redisKey, throttles, callback);
 };
 
-module.exports.remove = function remove(names, callback) {
+RedisDataProvider.prototype.remove = function remove(names, callback) {
 	var args = [redisKey].concat(names, [callback]);
 	redis.hdel.apply(redis, args);
 };
+
+module.exports = RedisDataProvider;

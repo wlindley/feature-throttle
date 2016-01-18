@@ -9,17 +9,29 @@ describe('FeatureThrottle', function() {
 	var originalThrottles = null;
 	var featureThrottle = null;
 
-	beforeEach(function() {
+	beforeEach(function(done) {
 		dataProvider = {
 			'add' : sinon.stub(),
 			'get' : sinon.stub(),
-			'remove' : sinon.stub()
+			'remove' : sinon.stub(),
+			'init' : sinon.stub(),
+			'destroy' : sinon.stub()
 		};
 		originalThrottles = {};
 		dataProvider.remove.callsArg(1);
 		dataProvider.add.callsArg(1);
 		dataProvider.get.callsArgWith(0, null, originalThrottles);
+		dataProvider.init.callsArg(0);
+		dataProvider.destroy.callsArg(0);
 		featureThrottle = new FeatureThrottle(dataProvider);
+		featureThrottle.init(done);
+	});
+
+	afterEach(function(done) {
+		featureThrottle.destroy(function(err) {
+			featureThrottle = null;
+			done(err);
+		});
 	});
 
 	describe('#setThrottles', function() {
