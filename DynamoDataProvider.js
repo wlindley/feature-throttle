@@ -5,7 +5,6 @@ aws.config.update({
 	endpoint : 'http://localhost:8000'
 });
 var dynamodb = new aws.DynamoDB();
-var dynamodbDoc = new aws.DynamoDB.DocumentClient();
 var tableName = 'feature-throttles';
 
 function DynamoDataProvider() {
@@ -34,13 +33,13 @@ DynamoDataProvider.prototype.get = function get(callback) {
 	var params = {
 		TableName : tableName
 	};
-	dynamodbDoc.scan(params, function onScan(err, result) {
+	dynamodb.scan(params, function onScan(err, result) {
 		if (err)
 			return callback(new Error(err));
 
 		var throttles = {};
 		result.Items.forEach(function onEach(item, index, array) {
-			throttles[item.throttle] = Number(item.threshold);
+			throttles[item.throttle.S] = Number(item.threshold.N);
 		});
 		callback(null, throttles);
 	});
@@ -52,11 +51,11 @@ DynamoDataProvider.prototype.add = function add(throttles, callback) {
 			var params = {
 				TableName : tableName,
 				Item : {
-					throttle : key,
-					threshold : String(item)
+					throttle : { 'S' : key },
+					threshold : { 'N' : String(item) }
 				}
 			};
-			dynamodbDoc.put(params, function(err, result) {
+			dynamodb.putItem(params, function(err, result) {
 				itemComplete(err, result);
 			});
 		},
@@ -68,9 +67,9 @@ DynamoDataProvider.prototype.remove = function remove(names, callback) {
 		function onEach(item, itemComplete) {
 			var params = {
 				TableName : tableName,
-				Key : { throttle : item }
+				Key : { throttle : { 'S' : item } }
 			};
-			dynamodbDoc.delete(params, itemComplete);
+			dynamodb.deleteItem(params, itemComplete);
 		},
 		callback);
 };
