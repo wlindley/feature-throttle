@@ -1,14 +1,17 @@
 language: node_js
 node_js:
-    - "4.2"
+  - '4.2'
 services:
-    - redis-server
+  - redis-server
 install:
-    - wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /tmp/dynamodb.tar.gz
-    - mkdir /tmp/dynamodb
-    - tar -zxvf /tmp/dynamodb.tar.gz -C /tmp/dynamodb
-    - npm install
-
+  - wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /tmp/dynamodb.tar.gz
+  - mkdir /tmp/dynamodb
+  - tar -zxvf /tmp/dynamodb.tar.gz -C /tmp/dynamodb
+  - npm install
 before_script:
-    - java -Xmx256m -Djava.library.path=/tmp/dynamodb/DynamoDBLocal_lib -jar /tmp/dynamodb/DynamoDBLocal.jar -inMemory &
-    - sleep 2
+  - java -Xmx256m -Djava.library.path=/tmp/dynamodb/DynamoDBLocal_lib -jar /tmp/dynamodb/DynamoDBLocal.jar -inMemory &
+  - sleep 2
+env:
+  - AWS_ACCESS_KEY_ID: IDAKIAIA4YIFJCLEYFDSPA
+  - AWS_SECRET_ACCESS_KEY:
+      secure: Tptx/Bh6KjIxFlBAiLSDrJmIi2FxyewPPhOlzVYEYlGWieM+7za+8miGvWox/zYQ/8Hlah/KbhrR7MnnFvBPRC6tD7IaGgikRXLI9ZViFA2YI85vo/WWmjjzVv2PRi3dS9V0GNsQrOoJUmaBsTEcwReUUkdWHZv+N7FnnzRb/J5JNYf2IWEMCCjLfLOMCQBziMAZCu199dUR8K6axgIjtjuiJNDhHq+Lw+mtb3UyP34yDehbN5TJYj0UlK8anXxi06DX0/VGRj4uDpSLHwVilYeotT7De8BD7VM5UsS/JbuVnJZZ/oc643eTYAG7m/LiIFuW1TxWNqtdkbvBZxFmhXC3bZlXE/YbMfej1SXbuKoFyyvqK7uiJzfmiME5JFocNIGgnOGEa2xOVdLQggBI7+2rWzz7hpzB0MceAkOjxDpkDu7h/GkkdRnzb/+7ENWngS3tndyLMuBE1XkFEJphRlIR/yu4m3FjyEsDzSi2av/Imi8RL8IZqte/Vjy5TfUVyk71u/ZFY3M0Q70nnSkl2PTQV0A1MfFeWKhyg2rcOlfySO58udk1HYsi0CrxA4RPJxaTjeqh8apKS0EfQRgLTgMyNqSZ7M7bgg1jdV/m/Te0P6Xi9tOYi96PEoUJRjUuJPyv61fiGgOGWvK38RNKsta2/xeeDmsjAktd56U0Enw=
