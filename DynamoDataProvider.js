@@ -17,7 +17,7 @@ DynamoDataProvider.prototype.name = 'Dynamo';
 DynamoDataProvider.prototype.init = function init(callback) {
 	dynamodb.listTables({}, function onListTables(err, result) {
 		if (err)
-			throw new Error(err);
+			return callback(new Error(err));
 		if (-1 === result.TableNames.indexOf(tableName))
 			return createTable(callback);
 		callback();
@@ -36,11 +36,11 @@ DynamoDataProvider.prototype.get = function get(callback) {
 	};
 	dynamodbDoc.scan(params, function onScan(err, result) {
 		if (err)
-			throw new Error(err);
+			return callback(new Error(err));
 
 		var throttles = {};
 		result.Items.forEach(function onEach(item, index, array) {
-			throttles[item.name] = item.value;
+			throttles[item.throttle] = Number(item.threshold);
 		});
 		callback(null, throttles);
 	});
@@ -52,11 +52,13 @@ DynamoDataProvider.prototype.add = function add(throttles, callback) {
 			var params = {
 				TableName : tableName,
 				Item : {
-					'name' : key,
-					'value' : item
+					throttle : key,
+					threshold : String(item)
 				}
 			};
-			dynamodbDoc.put(params, itemComplete);
+			dynamodbDoc.put(params, function(err, result) {
+				itemComplete(err, result);
+			});
 		},
 		callback);
 };
@@ -66,7 +68,7 @@ DynamoDataProvider.prototype.remove = function remove(names, callback) {
 		function onEach(item, itemComplete) {
 			var params = {
 				TableName : tableName,
-				Key : { name : item }
+				Key : { throttle : item }
 			};
 			dynamodbDoc.delete(params, itemComplete);
 		},
@@ -77,10 +79,10 @@ function createTable(callback) {
 	var params = {
 		TableName : tableName,
 		KeySchema : [
-			{ AttributeName : 'name', KeyType : 'HASH' }
+			{ AttributeName : 'throttle', KeyType : 'HASH' }
 		],
 		AttributeDefinitions : [
-			{ AttributeName : 'name', AttributeType : 'S' }
+			{ AttributeName : 'throttle', AttributeType : 'S' }
 		],
 		ProvisionedThroughput : {
 			ReadCapacityUnits : 10,
@@ -89,7 +91,7 @@ function createTable(callback) {
 	};
 	dynamodb.createTable(params, function onCreateTable(err, result) {
 		if (err)
-			throw new Error(err);
+			return callback(new Error(err));
 		callback();
 	});
 }
