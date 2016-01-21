@@ -13,11 +13,13 @@
 		"body-parser": "^1.14.2",
 		"redis": "^2.4.2",
 		"jade": "^1.11.0",
+		"async": "^1.5.0",
+		"aws-sdk": "^2.2.26"
+	},
+	"devDependencies": {
 		"mocha": "^2.3.4",
 		"chai": "^3.4.1",
 		"sinon": "^1.17.2",
-		"async": "^1.5.0",
-		"aws-sdk": "^2.2.26",
 		"eslint": "^1.10.3"
 	}
 }
