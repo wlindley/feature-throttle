@@ -3,3 +3,12 @@ node_js:
     - "4.2"
 services:
     - redis-server
+install:
+    - wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /tmp/dynamodb.tar.gz
+    - mkdir /tmp/dynamodb
+    - tar -zxvf /tmp/dynamodb.tar.gz -C /tmp/dynamodb
+    - npm install
+
+before_script:
+    - java -Xmx256m -Djava.library.path=/tmp/dynamodb/DynamoDBLocal_lib -jar /tmp/dynamodb/DynamoDBLocal.jar -inMemory &
+    - sleep 2
