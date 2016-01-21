@@ -1,6 +1,6 @@
 {
 	"name": "feature-throttle",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"author": "Walker Wondra-Lindley <walker@walkerlindley.com>",
 	"license": "MIT",
 	"scripts": {
@@ -17,6 +17,7 @@
 		"chai": "^3.4.1",
 		"sinon": "^1.17.2",
 		"async": "^1.5.0",
-		"aws-sdk": "^2.2.26"
+		"aws-sdk": "^2.2.26",
+		"eslint": "^1.10.3"
 	}
 }
