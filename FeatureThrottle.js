@@ -27,7 +27,7 @@ function FeatureThrottle(dataProvider, userMapper) {
 	this.setThrottles = function setThrottles(input, callback) {
 		dataProvider.get(function onListThrottles(err, throttles) {
 			if (err)
-				throw new Error(err);
+				return callback(new Error(err));
 
 			var toRemove = [];
 			for (var key in throttles)
@@ -36,7 +36,7 @@ function FeatureThrottle(dataProvider, userMapper) {
 			if (0 !== toRemove.length) {
 				dataProvider.remove(toRemove, function onRemove(err) {
 					if (err)
-						throw new Error(err);
+						return callback(new Error(err));
 
 					self.updateThrottles(input, callback);
 				});

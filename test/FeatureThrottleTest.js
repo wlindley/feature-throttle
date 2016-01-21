@@ -37,7 +37,7 @@ describe('FeatureThrottle (Unit)', function() {
 			var throttles = {'feature2' : .2};
 			featureThrottle.setThrottles(throttles, function(err) {
 				if (err)
-					throw err;
+					return done(err);
 				assert(dataProvider.add.calledWith(throttles));
 				assert(!dataProvider.remove.called);
 				done();
@@ -49,7 +49,7 @@ describe('FeatureThrottle (Unit)', function() {
 			var updated = {'feature1' : .8};
 			featureThrottle.setThrottles(updated, function(err) {
 				if (err)
-					throw err;
+					return done(err);
 				assert(dataProvider.add.calledWith(updated));
 				assert(!dataProvider.remove.called);
 				done();
@@ -61,7 +61,7 @@ describe('FeatureThrottle (Unit)', function() {
 			var newThrottles = {'feature2' : .95};
 			featureThrottle.setThrottles(newThrottles, function(err) {
 				if (err)
-					throw err;
+					return done(err);
 				assert(dataProvider.remove.calledWith(['feature1']));
 				assert(dataProvider.add.calledWith(newThrottles));
 				done();
@@ -72,7 +72,7 @@ describe('FeatureThrottle (Unit)', function() {
 			originalThrottles['feature1'] = .45;
 			featureThrottle.setThrottles({}, function(err) {
 				if (err)
-					throw err;
+					return done(err);
 				assert(!dataProvider.add.called);
 				done();
 			});
@@ -85,7 +85,7 @@ describe('FeatureThrottle (Unit)', function() {
 			originalThrottles['baz'] = .125;
 			featureThrottle.listThrottles(function(err, actual) {
 				if (err)
-					throw err;
+					return done(err);
 				actual.should.equal(originalThrottles);
 				done();
 			});
@@ -96,7 +96,7 @@ describe('FeatureThrottle (Unit)', function() {
 		it('removes single throttle', function(done) {
 			featureThrottle.removeThrottle('feature2', function(err) {
 				if (err)
-					throw err;
+					return done(err);
 				assert(dataProvider.remove.calledWith(['feature2']));
 				done();
 			});
@@ -105,7 +105,7 @@ describe('FeatureThrottle (Unit)', function() {
 		it('removes multiple throttles when multiple names are passed', function(done) {
 			featureThrottle.removeThrottle('feature2', 'feature3', function(err) {
 				if (err)
-					throw err;
+					return done(err);
 				assert(dataProvider.remove.calledWith(['feature2', 'feature3']));
 				done();
 			});
@@ -117,7 +117,7 @@ describe('FeatureThrottle (Unit)', function() {
 			var additional = {'feature1' : .35, 'feature3' : .45};
 			featureThrottle.updateThrottles(additional, function(err){
 				if (err)
-					throw err;
+					return done(err);
 				assert(dataProvider.add.calledWith(additional));
 				done();
 			});
