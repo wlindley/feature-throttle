@@ -1,11 +1,12 @@
 var aws = require('aws-sdk');
 var async = require('async');
-aws.config.update({
-	region : 'us-west-2',
-	endpoint : 'http://localhost:8000'
-});
+
+var awsConfig = { region : 'us-west-2' };
+if (process.env.test)
+	awsConfig.endpoint = 'http://localhost:8000';
+aws.config.update(awsConfig);
 var dynamodb = new aws.DynamoDB();
-var tableName = 'feature-throttles';
+const TABLE_NAME = 'feature-throttles';
 
 function DynamoDataProvider() {
 
@@ -17,21 +18,21 @@ DynamoDataProvider.prototype.init = function init(callback) {
 	dynamodb.listTables({}, function onListTables(err, result) {
 		if (err)
 			return callback(new Error(err));
-		if (-1 === result.TableNames.indexOf(tableName))
+		if (-1 === result.TableNames.indexOf(TABLE_NAME))
 			return createTable(callback);
 		callback();
 	});
 };
 
 DynamoDataProvider.prototype.destroy = function destroy(callback) {
-	dynamodb.deleteTable({TableName : tableName}, function onDeleteTable(err, result) {
+	dynamodb.deleteTable({TableName : TABLE_NAME}, function onDeleteTable(err, result) {
 		callback(err);
 	});
 };
 
 DynamoDataProvider.prototype.get = function get(callback) {
 	var params = {
-		TableName : tableName
+		TableName : TABLE_NAME
 	};
 	dynamodb.scan(params, function onScan(err, result) {
 		if (err)
@@ -49,7 +50,7 @@ DynamoDataProvider.prototype.add = function add(throttles, callback) {
 	async.forEachOf(throttles,
 		function onEach(item, key, itemComplete) {
 			var params = {
-				TableName : tableName,
+				TableName : TABLE_NAME,
 				Item : {
 					throttle : { 'S' : key },
 					threshold : { 'N' : String(item) }
@@ -66,7 +67,7 @@ DynamoDataProvider.prototype.remove = function remove(names, callback) {
 	async.each(names,
 		function onEach(item, itemComplete) {
 			var params = {
-				TableName : tableName,
+				TableName : TABLE_NAME,
 				Key : { throttle : { 'S' : item } }
 			};
 			dynamodb.deleteItem(params, itemComplete);
@@ -76,7 +77,7 @@ DynamoDataProvider.prototype.remove = function remove(names, callback) {
 
 function createTable(callback) {
 	var params = {
-		TableName : tableName,
+		TableName : TABLE_NAME,
 		KeySchema : [
 			{ AttributeName : 'throttle', KeyType : 'HASH' }
 		],
