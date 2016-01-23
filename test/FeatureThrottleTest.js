@@ -162,5 +162,12 @@ describe('FeatureThrottle (Unit)', function() {
 				})
 			], done);
 		});
+
+		it('returns error when throttle does not exist', function(done) {
+			featureThrottle.checkThrottle('non-feature', 'user02', function(err, didPass) {
+				should.exist(err);
+				done();
+			});
+		});
 	});
 });
