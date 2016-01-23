@@ -5,8 +5,9 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "node ./app.js",
-		"test": "test=true mocha --recursive",
-		"lint": "eslint ."
+		"test": "test=true mocha",
+		"lint": "eslint .",
+		"cover": "test=true istanbul cover _mocha"
 	},
 	"dependencies": {
 		"express": "^4.13.3",
@@ -20,7 +21,8 @@
 		"mocha": "^2.3.4",
 		"chai": "^3.4.1",
 		"sinon": "^1.17.2",
-		"eslint": "^1.10.3"
+		"eslint": "^1.10.3",
+		"istanbul": "^0.4.2"
 	},
 	"repository": {
 		"type" : "git",
