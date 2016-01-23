@@ -1,16 +1,18 @@
 language: node_js
 node_js:
-  - '4.2'
+- '4.2'
 services:
-  - redis-server
+- redis-server
 install:
-  - wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /tmp/dynamodb.tar.gz
-  - mkdir /tmp/dynamodb
-  - tar -zxvf /tmp/dynamodb.tar.gz -C /tmp/dynamodb
-  - npm install
+- wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz
+  -O /tmp/dynamodb.tar.gz
+- mkdir /tmp/dynamodb
+- tar -zxvf /tmp/dynamodb.tar.gz -C /tmp/dynamodb
+- npm install
 before_script:
-  - java -Xmx256m -Djava.library.path=/tmp/dynamodb/DynamoDBLocal_lib -jar /tmp/dynamodb/DynamoDBLocal.jar -inMemory &
-  - sleep 2
+- java -Xmx256m -Djava.library.path=/tmp/dynamodb/DynamoDBLocal_lib -jar /tmp/dynamodb/DynamoDBLocal.jar
+  -inMemory &
+- sleep 2
 env:
   AWS_ACCESS_KEY_ID=AKIAIA4YIFJCLEYFDSPA:
-    secure: beRNSx+hnl0MGwOVftMVOdaYqrXVCAmbzWLC4GEZWwCrMo0bKdQSK67OGgg0ie+5amNc7dFs5qQ3Y6Fa179nygiWBZEwbMZZtd+wXGgu86f+n+gZfAZL8vOQIInAEM+M1TQ2Xss8UhKGD4PU2zGIDldHNw9t++dGwQcWw+DFLdKwh8HMa+koibu11OSfPr92c3QY+0hHT/khLjiFSXuD9kI8J+pb5mJQEgiDUEeUiVuDZbp5vC7nVdb0CZAC2IDteNB9TRnmkpR9XJ+TgONH7bWxtntTSOPsd4DEZwvxVm4DxcaPVjZc8uYx5auVaOo3P69znd18yhWH2+jIrzpmYx+9tk+bmIZZwOSRNvI8GTw4Ql2C62aRcskidtaaVv4Pzd4RJ0iFMJ0FrxdXZwMQD365Cl0FBZrFagBWqP1teRjx046tXQF4evWL8gl9kZV8LgFdymptZY5vEhj17FU7V/J0oRu347aoWlc/Gc8qYIeaGZFJla35IqVI9PRKiJdBF+FY9+C9NznDkpwSNe4FTwHT/W7EQEchNw77hFOE115N9Lk4SOmqeDtmhbdTaB7hYrFCQb6lvmRvCLM5vTd2QGraJlQOdIpxCYJQvZMhAHzxBRtYL8aehH8bQ7iUFAzyqEeX/BNWLfJI899iWAUZzBdimKMhf6fiLvw6HtnvL9Q=
+    secure: e/roPgv/2n1xd7BE0DwtRJ2ha2KDEmKtC1OYDqERXoorH3cPhgifFsGNemTh2H3AaRNv9Fuk0HVcvCBO30eMhOJ0HHIsDwZ/INdBmPTwrA/U6DgxTP/ROiQC+RDrRGiSC9jVuR6Oaw/7XdkBZD72ivfEEMF6jw/bbdrGghaSVMLGuSY/shGSf12PE7xo1kIkDZP4cUWWSCfTr4eShkgY+prts5F4iIP0jXZP9MQvKBs3v9xclyaNjEVFMKXnHS+SWzqvG9tvHbpO2kq3mEtMV5Tl09XDfxUS0R0bB1wqWNezBsFMscdNGBvRQpBQ7ETsznJs6hncMkim3StzQ4LX/7/J7SMt+WwidNuppB+OpEVk5X5sNXvKCnlaBIQPpsCzMUCoIBOwOWphoOZFM368KPnMqD21sQOlnhd+xYHFdpV0BqclDjnwP61fZL3zhUPDuJbIkseWiFoYlK6o9Llip/oLaSmLep6XJxWcI6QWr4qu9nrAD0F6mUgm3qksV3SPhSgNjNIks2u9CuSwe0n1j388bxU+ZTuhTsqkHWwhIIulJzZlBB2Yx16hNWE0jmMGfaumO3RNUrMOhe3leG+mlW0eeKsvaDTM0B3LFDnzx/yYS41+F3O+iU38bqBj0QrrSPwlZVo6rGHQj1NG9fGBqXEsEIZJ+ajCEQKMBMb4Ijg=
