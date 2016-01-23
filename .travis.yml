@@ -21,3 +21,5 @@ before_script:
 script:
   - npm run lint
   - npm test
+  - npm run cover
+  - istanbul check-coverage -statement 90
