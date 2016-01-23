@@ -1,15 +1,23 @@
 language: node_js
 node_js:
   - '4.2'
+
 services:
   - redis-server
+
+env:
+  - secure: soYU281PBvqur4ZK/w9JO9eOJVDfZhboGVZX1Yo+mZNYmNrWWrAF5ylL9kbjgBr17cOdeq3XBBVuk6lepqM5YjQtZ4XENfcWPw8bwmy8MOVa8J1WRcS45m6TdQj3yEuXMqUVB/JlgErS+y2rjz7+hzsoO/FmD1uxukyHDFvMY2/NSfMCxUL7Hh6eOw2B9CK0DsPIIdPlt1ZbYdv5PmVpnGVaET/aaJarGc4fRM5QSOnmiyLyhj10H60Tj83gMrRtkCdzthHcIsS3XMsuSl5luD5JG62sW68CL5UqhmdaaQrSLIv5/vsNsME2RGopJ9ajK10AeRV6UIK4umcH5ANwHkiKwgmkiOgd1CW7KggeIFJ1REx0o8d+QhDB4ykPbhR2ZY1QjYG88PXNaZbkjS5VcoMjdpG2orDv9uRcQDg3+dPEja2rnyLFQpg8J8MQ5n+xgzUSDifrp0aquWTuv3RxjGRRvSBI+g6KBCPZwM0Nq1LC8oAaSgYnQ7/0Z6AsVAn1xfonWz41B94KVAyUq/TC3BmhgU3OR5cLJtqvXDO3JefMh2yQw1zoCU/0MPMFydl/ovYuqHYsbtsvv8+VaPMXPnU9dDjdtJ1BWwRPztAuNS/jEOR4Fpq89SnEJ+tNF+wpgo3c7wfpU7GOGUq0x+Y5e2AVfTCmQk/ySRkhE9EB6Uc=
+
 install:
   - wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /tmp/dynamodb.tar.gz
   - mkdir /tmp/dynamodb
   - tar -zxvf /tmp/dynamodb.tar.gz -C /tmp/dynamodb
   - npm install
+
 before_script:
   - java -Xmx256m -Djava.library.path=/tmp/dynamodb/DynamoDBLocal_lib -jar /tmp/dynamodb/DynamoDBLocal.jar -inMemory &
   - sleep 2
-env:
-  - secure: soYU281PBvqur4ZK/w9JO9eOJVDfZhboGVZX1Yo+mZNYmNrWWrAF5ylL9kbjgBr17cOdeq3XBBVuk6lepqM5YjQtZ4XENfcWPw8bwmy8MOVa8J1WRcS45m6TdQj3yEuXMqUVB/JlgErS+y2rjz7+hzsoO/FmD1uxukyHDFvMY2/NSfMCxUL7Hh6eOw2B9CK0DsPIIdPlt1ZbYdv5PmVpnGVaET/aaJarGc4fRM5QSOnmiyLyhj10H60Tj83gMrRtkCdzthHcIsS3XMsuSl5luD5JG62sW68CL5UqhmdaaQrSLIv5/vsNsME2RGopJ9ajK10AeRV6UIK4umcH5ANwHkiKwgmkiOgd1CW7KggeIFJ1REx0o8d+QhDB4ykPbhR2ZY1QjYG88PXNaZbkjS5VcoMjdpG2orDv9uRcQDg3+dPEja2rnyLFQpg8J8MQ5n+xgzUSDifrp0aquWTuv3RxjGRRvSBI+g6KBCPZwM0Nq1LC8oAaSgYnQ7/0Z6AsVAn1xfonWz41B94KVAyUq/TC3BmhgU3OR5cLJtqvXDO3JefMh2yQw1zoCU/0MPMFydl/ovYuqHYsbtsvv8+VaPMXPnU9dDjdtJ1BWwRPztAuNS/jEOR4Fpq89SnEJ+tNF+wpgo3c7wfpU7GOGUq0x+Y5e2AVfTCmQk/ySRkhE9EB6Uc=
+
+script:
+  - npm run lint
+  - npm test
